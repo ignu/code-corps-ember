@@ -1,6 +1,5 @@
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
-import stubService from 'code-corps-ember/tests/helpers/stub-service';
 import PageObject from 'ember-cli-page-object';
 import component from 'code-corps-ember/tests/pages/components/organization-profile';
 
@@ -9,7 +8,6 @@ let page = PageObject.create(component);
 moduleForComponent('organization-profile', 'Integration | Component | organization profile', {
   integration: true,
   beforeEach() {
-    stubService(this, 'credentials');
     page.setContext(this);
   },
   afterEach() {

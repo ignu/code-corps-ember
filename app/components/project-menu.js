@@ -25,14 +25,6 @@ export default Component.extend({
   tagName: 'nav',
 
   /**
-    Retreives user credentials to show more content for project managers.
-
-    @property credentials
-    @type Ember.Service
-   */
-  credentials: service(),
-
-  /**
     Service that provides user authentication information.
 
     @property session

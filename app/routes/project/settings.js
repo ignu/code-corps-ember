@@ -9,7 +9,6 @@ const {
 } = Ember;
 
 export default Route.extend(AuthenticatedRouteMixin, CanMixin, {
-  credentials: service(),
   projectSkillsList: service(),
   session: service(),
 
