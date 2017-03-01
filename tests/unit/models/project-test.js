@@ -36,6 +36,7 @@ testForAttributes('project', [
 ]);
 
 testForBelongsTo('project', 'organization');
+testForBelongsTo('project', 'owner');
 testForBelongsTo('project', 'stripeConnectPlan');
 
 testForHasMany('project', 'donationGoals');

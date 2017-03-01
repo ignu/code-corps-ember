@@ -22,9 +22,8 @@ test('it requires authentication', function(assert) {
 test('it allows editing of organization profile', function(assert) {
   assert.expect(4);
 
-  let user = server.create('user');
-
   let organization = createOrganizationWithSluggedRoute();
+  let user = organization.createOwner();
 
   server.create('organizationMembership', {
     member: user,
@@ -65,9 +64,8 @@ test("it allows editing of organization's image", function(assert) {
   let fileName = 'file.png';
   let droppedImageString = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-  let user = server.create('user');
-
   let organization = createOrganizationWithSluggedRoute();
+  let user = organization.createOwner();
 
   server.create('organizationMembership', {
     member: user,

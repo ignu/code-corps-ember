@@ -28,6 +28,7 @@ test('When unauthenticated, and project has no long description, it shows proper
 
 test('When unauthenticated, and project has long description, it shows the project long description', function(assert) {
   assert.expect(2);
+
   let organization = createOrganizationWithSluggedRoute();
   let project = server.create('project', {
     longDescriptionBody: 'A body',
@@ -46,18 +47,18 @@ test('When unauthenticated, and project has long description, it shows the proje
   });
 });
 
-test('When authenticated as admin, and project has no long description, it allows setting it', function(assert) {
+test('When authenticate as owner, and project has no long description, it allows setting it', function(assert) {
   assert.expect(4);
 
-  let user = server.create('user');
   let organization = createOrganizationWithSluggedRoute();
-  server.create('organization-membership', { organization, member: user, role: 'admin' });
 
   let project = server.create('project', {
     longDescriptionBody: null,
     longDescriptionMarkdown: null,
     organization
   });
+
+  let user = project.createOwner();
 
   authenticateSession(this.application, { user_id: user.id });
 
@@ -79,18 +80,18 @@ test('When authenticated as admin, and project has no long description, it allow
   });
 });
 
-test('When authenticated as admin, and project has long description, it allows editing it', function(assert) {
+test('When authenticated as owner, and project has long description, it allows editing it', function(assert) {
   assert.expect(4);
 
-  let user = server.create('user');
   let organization = createOrganizationWithSluggedRoute();
-  server.create('organization-membership', { organization, member: user, role: 'admin' });
 
   let project = server.create('project', {
     longDescriptionBody: 'A body',
     longDescriptionMarkdown: 'A body',
     organization
   });
+
+  let user = project.createOwner();
 
   authenticateSession(this.application, { user_id: user.id });
 

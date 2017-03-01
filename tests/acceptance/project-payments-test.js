@@ -1,6 +1,6 @@
 import { test } from 'qunit';
 import moduleForAcceptance from 'code-corps-ember/tests/helpers/module-for-acceptance';
-import { authenticateAsMemberOfRole } from 'code-corps-ember/tests/helpers/authentication';
+import { authenticateSession } from 'code-corps-ember/tests/helpers/ember-simple-auth';
 import createProjectWithSluggedRoute from 'code-corps-ember/tests/helpers/mirage/create-project-with-slugged-route';
 import Mirage from 'ember-cli-mirage';
 import page from '../pages/project/settings/donations/payments';
@@ -11,9 +11,8 @@ test('it requires authentication', function(assert) {
   assert.expect(1);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
 
-  page.visit({ organization: organization.slug, project: project.slug });
+  page.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     assert.equal(currentRouteName(), 'login', 'User was redirected to project route');
@@ -24,11 +23,11 @@ test('it redirects to project list page if user is not allowed to setup the acco
   assert.expect(1);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
+  let user = server.create('user');
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'admin');
+  authenticateSession(this.application, { user_id: user.id });
 
-  page.visit({ organization: organization.slug, project: project.slug });
+  page.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     assert.equal(currentRouteName(), 'project.index', 'User was redirected to project list route');
@@ -39,11 +38,11 @@ test('The full setup works properly', function(assert) {
   assert.expect(12);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
+  let user = project.createOwner();
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'owner');
+  authenticateSession(this.application, { user_id: user.id });
 
-  page.visit({ organization: organization.slug, project: project.slug });
+  page.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     assert.ok(page.accountSetup.rendersCreateAccount, 'There is no stripe connect account, so the create account form is rendered');

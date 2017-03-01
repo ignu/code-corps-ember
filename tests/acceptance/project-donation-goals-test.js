@@ -1,6 +1,6 @@
 import { test } from 'qunit';
 import moduleForAcceptance from 'code-corps-ember/tests/helpers/module-for-acceptance';
-import { authenticateAsMemberOfRole } from 'code-corps-ember/tests/helpers/authentication';
+import { authenticateSession } from 'code-corps-ember/tests/helpers/ember-simple-auth';
 import createOrganizationWithSluggedRoute from 'code-corps-ember/tests/helpers/mirage/create-organization-with-slugged-route';
 import createProjectWithSluggedRoute from 'code-corps-ember/tests/helpers/mirage/create-project-with-slugged-route';
 import projectSettingsDonationsPage from '../pages/project/settings/donations';
@@ -12,22 +12,22 @@ test('it requires authentication', function(assert) {
   assert.expect(1);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
 
-  projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
+  projectSettingsDonationsPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     assert.equal(currentRouteName(), 'login', 'User was redirected to project route');
   });
 });
 
-test('it redirects to project list page if user is not allowed to manage donation goals', function(assert) {
+test('it redirects to project list page if user is not allowed to manage project', function(assert) {
   assert.expect(1);
 
   let project = createProjectWithSluggedRoute();
   let { organization } = project;
+  let user = server.create('user');
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'admin');
+  authenticateSession(this.application, { user_id: user.id });
 
   projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
 
@@ -40,12 +40,12 @@ test('it renders existing donation goals', function(assert) {
   assert.expect(1);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
+  let user = project.createOwner();
   server.createList('donation-goal', 3, { project });
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'owner');
+  authenticateSession(this.application, { user_id: user.id });
 
-  projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
+  projectSettingsDonationsPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     assert.equal(projectSettingsDonationsPage.donationGoals().count, 3, 'All project donation goals are rendered');
@@ -56,11 +56,11 @@ test('it sets up a new unsaved donation goal if there are no donation goals, whi
   assert.expect(4);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
+  let user = project.createOwner();
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'owner');
+  authenticateSession(this.application, { user_id: user.id });
 
-  projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
+  projectSettingsDonationsPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     assert.equal(projectSettingsDonationsPage.editedDonationGoals().count, 1, 'A single edited donation goal form is rendered');
@@ -83,12 +83,12 @@ test('it is possible to add a donation goal when donation goals already exists',
   assert.expect(3);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
+  let user = project.createOwner();
   server.createList('donation-goal', 1, { project });
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'owner');
+  authenticateSession(this.application, { user_id: user.id });
 
-  projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
+  projectSettingsDonationsPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     projectSettingsDonationsPage.clickAddNew();
@@ -111,12 +111,12 @@ test('it allows editing of existing donation goals', function(assert) {
   assert.expect(3);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
+  let user = project.createOwner();
   server.createList('donation-goal', 1, { project });
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'owner');
+  authenticateSession(this.application, { user_id: user.id });
 
-  projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
+  projectSettingsDonationsPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     projectSettingsDonationsPage.donationGoals(0).clickEdit();
@@ -139,12 +139,12 @@ test('cancelling edit of an unsaved new goal removes that goal from the list', f
   assert.expect(1);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
+  let user = project.createOwner();
   server.createList('donation-goal', 1, { project });
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'owner');
+  authenticateSession(this.application, { user_id: user.id });
 
-  projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
+  projectSettingsDonationsPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     projectSettingsDonationsPage.clickAddNew();
@@ -162,12 +162,12 @@ test('cancelling edit of an unsaved existing goal keeps that goal in the list', 
   assert.expect(1);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
+  let user = project.createOwner();
   server.createList('donation-goal', 1, { project });
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'owner');
+  authenticateSession(this.application, { user_id: user.id });
 
-  projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
+  projectSettingsDonationsPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     projectSettingsDonationsPage.donationGoals(0).clickEdit();
@@ -185,13 +185,13 @@ test('it allows activating donations for the project', function(assert) {
   assert.expect(2);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
+  let user = project.createOwner();
   project.attrs.canActivateDonations = true;
   project.save();
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'owner');
+  authenticateSession(this.application, { user_id: user.id });
 
-  projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
+  projectSettingsDonationsPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     projectSettingsDonationsPage.clickActivateDonationGoals();
@@ -212,10 +212,11 @@ test('it shows donation progress if donations are active', function(assert) {
     donationsActive: true,
     organization
   });
+  let user = project.createOwner();
 
   server.createList('donation-goal', 1, { project });
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'owner');
+  authenticateSession(this.application, { user_id: user.id });
 
   projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
 
@@ -232,8 +233,9 @@ test('it does not show donation progress if donations are not active', function(
     donationsActive: false,
     organization
   });
+  let user = project.createOwner();
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'owner');
+  authenticateSession(this.application, { user_id: user.id });
 
   projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
 
@@ -246,9 +248,9 @@ test('it renders validation errors', function(assert) {
   assert.expect(3);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
+  let user = project.createOwner();
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'owner');
+  authenticateSession(this.application, { user_id: user.id });
 
   let done = assert.async();
 
@@ -269,7 +271,7 @@ test('it renders validation errors', function(assert) {
     });
   });
 
-  projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
+  projectSettingsDonationsPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     let form = projectSettingsDonationsPage.editedDonationGoals(0);
@@ -289,9 +291,9 @@ test('it renders other errors', function(assert) {
   assert.expect(1);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
+  let user = project.createOwner();
 
-  authenticateAsMemberOfRole(this.application, server, organization, 'owner');
+  authenticateSession(this.application, { user_id: user.id });
 
   let done = assert.async();
 
@@ -307,7 +309,7 @@ test('it renders other errors', function(assert) {
     });
   });
 
-  projectSettingsDonationsPage.visit({ organization: organization.slug, project: project.slug });
+  projectSettingsDonationsPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(() => {
     projectSettingsDonationsPage.editedDonationGoals(0).clickSave();

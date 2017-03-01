@@ -10,10 +10,10 @@ test('It renders navigation properly', function(assert) {
   assert.expect(2);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
-  projectTasksIndexPage.visit({ organization: organization.slug, project: project.slug });
-  let aboutURL = `/${organization.slug}/${project.slug}`;
+  let aboutURL = `/${project.organization.slug}/${project.slug}`;
   let tasksURL = `${aboutURL}/tasks`;
+
+  projectTasksIndexPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(function() {
     assert.equal(projectTasksIndexPage.projectMenu.links(0).href, aboutURL, 'Link to about is properly rendered');
@@ -25,8 +25,8 @@ test('The footer and spacer are hidden, the main container is set up for project
   assert.expect(4);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
-  projectTasksIndexPage.visit({ organization: organization.slug, project: project.slug });
+
+  projectTasksIndexPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(function() {
     assert.equal(currentRouteName(), 'project.tasks.index');
@@ -40,8 +40,8 @@ test('Navigation works', function(assert) {
   assert.expect(6);
 
   let project = createProjectWithSluggedRoute();
-  let { organization } = project;
-  projectTasksIndexPage.visit({ organization: organization.slug, project: project.slug });
+
+  projectTasksIndexPage.visit({ organization: project.organization.slug, project: project.slug });
 
   andThen(function() {
     assert.equal(currentRouteName(), 'project.tasks.index');

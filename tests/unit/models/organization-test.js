@@ -40,6 +40,7 @@ test('it should have all of its attributes', function(assert) {
 });
 
 testForBelongsTo('organization', 'stripeConnectAccount');
+testForBelongsTo('organization', 'owner');
 testForHasMany('organization', 'organizationMemberships');
 testForHasMany('organization', 'projects');
 

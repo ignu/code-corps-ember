@@ -21,16 +21,11 @@ test('it requires authentication', function(assert) {
   });
 });
 
-test('it allows editing of project profile', function(assert) {
+test('it allows editing of project profile for owners', function(assert) {
   assert.expect(4);
 
-  let user = server.create('user');
   let project = createProjectWithSluggedRoute();
-  server.create('organizationMembership', {
-    member: user,
-    organization: project.organization,
-    role: 'admin'
-  });
+  let user = project.createOwner();
 
   authenticateSession(this.application, { user_id: user.id });
 
@@ -64,19 +59,13 @@ test('it allows editing of project profile', function(assert) {
   });
 });
 
-test("it allows editing of project's image", function(assert) {
+test("it allows editing of project's image for owners", function(assert) {
   assert.expect(3);
   let done = assert.async();
 
   let droppedImageString = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-  let user = server.create('user');
   let project = createProjectWithSluggedRoute();
-
-  server.create('organizationMembership', {
-    member: user,
-    organization: project.organization,
-    role: 'admin'
-  });
+  let user = project.createOwner();
 
   authenticateSession(this.application, { user_id: user.id });
 
@@ -97,20 +86,13 @@ test("it allows editing of project's image", function(assert) {
   });
 });
 
-test("it allows editing of project's skills", function(assert) {
+test("it allows editing of project's skills for owners", function(assert) {
   assert.expect(4);
   let done = assert.async();
 
-  server.create('skill', {
-    title: 'Ruby'
-  });
-  let user = server.create('user');
+  server.create('skill', { title: 'Ruby' });
   let project = createProjectWithSluggedRoute();
-  server.create('organizationMembership', {
-    member: user,
-    organization: project.organization,
-    role: 'admin'
-  });
+  let user = project.createOwner();
 
   authenticateSession(this.application, { user_id: user.id });
 

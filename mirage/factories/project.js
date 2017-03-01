@@ -15,5 +15,13 @@ export default Factory.extend({
     if (this.title) {
       return String.underscore(this.title.toLowerCase());
     }
+  },
+
+  // in real-life scenarios, a project must necessarily have an owner
+  // this is not the case in mirage, so we make it so
+  afterCreate(project, /* server */) {
+    if (!project.owner) {
+      project.createOwner();
+    }
   }
 });

@@ -30,17 +30,11 @@ test("it displays the organization's details", function(assert) {
   });
 });
 
-test('an admin can navigate to settings', function(assert) {
+test('an owner can navigate to settings', function(assert) {
   assert.expect(3);
 
   let organization = createOrganizationWithSluggedRoute();
-  let user = server.create('user');
-
-  server.create('organization-membership', {
-    member: user,
-    organization,
-    role: 'admin'
-  });
+  let user = organization.createOwner();
 
   // we assume authenticate session here. specific behavior regarding authentication and
   // showing/hiding of links is handled in the organization-menu component integration test

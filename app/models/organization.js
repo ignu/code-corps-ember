@@ -18,6 +18,7 @@ export default Model.extend({
   slug: attr(),
 
   organizationMemberships: hasMany('organization-membership', { async: true }),
+  owner: belongsTo('user', { async: true }),
   projects: hasMany('project', { async: true }),
   stripeConnectAccount: belongsTo('stripe-connect-account', { async: true }),
 

@@ -51,6 +51,7 @@ export default Service.extend({
   memberships: alias('organization.organizationMemberships'),
 
   user: alias('currentUser.user'),
+
   userCanJoinOrganization: empty('membership'),
   userCanManageOrganization: alias('membership.isAtLeastAdmin'),
   userIsMemberInOrganization: notEmpty('membership'),

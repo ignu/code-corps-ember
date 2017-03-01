@@ -16,12 +16,13 @@ function buildURLParts(project_organization_slug, project_slug) {
 
 moduleForAcceptance('Acceptance: Contributors');
 
-test('when not an admin on the project', function(assert) {
+test('Requires user to be project owner to visit.', function(assert) {
   assert.expect(1);
 
   let project = createProjectWithSluggedRoute();
 
   let user = server.create('user');
+
   server.create('organizationMembership', {
     member: user,
     organization: project.organization,
@@ -35,15 +36,17 @@ test('when not an admin on the project', function(assert) {
   page.visit(contributorURLParts.args);
 
   andThen(function() {
-    assert.equal(currentURL(), '/projects');
+    let projectUrl = `/${project.organization.slug}/${project.slug}`;
+    assert.equal(currentURL(), projectUrl);
   });
 });
 
-test('when only the owner is a contributor', function(assert) {
+test('Lists owner when owner is the only member.', function(assert) {
   assert.expect(9);
 
   let project = createProjectWithSluggedRoute();
-  let user = server.create('user');
+  let user = project.createOwner();
+
   server.create('organizationMembership', {
     member: user,
     organization: project.organization,
@@ -71,11 +74,12 @@ test('when only the owner is a contributor', function(assert) {
   });
 });
 
-test('when there are multiple contributors', function(assert) {
+test('Lists multiple contributors if they exists.', function(assert) {
   assert.expect(16);
 
   let project = createProjectWithSluggedRoute();
-  let user = server.create('user');
+  let user = project.createOwner();
+
   server.create('organizationMembership', {
     member: user,
     organization: project.organization,

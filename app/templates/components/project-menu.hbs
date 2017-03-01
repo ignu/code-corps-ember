@@ -11,7 +11,7 @@
     </li>
 
     {{#if session.isAuthenticated}}
-      {{#if (can "manage organization" project.organization)}}
+      {{#if (can "manage project" project)}}
         <li class="contributors">
           {{#link-to 'project.settings.contributors' project}}
             Contributors
