@@ -27,6 +27,7 @@ export default Model.extend({
   tasks: hasMany('tasks', { async: true }),
   projectCategories: hasMany('project-category', { async: true }),
   projectSkills: hasMany('project-skill', { async: true }),
+  projectUsers: hasMany('project-user', { async: true }),
   stripeConnectPlan: belongsTo('stripe-connect-plan', { async: true }),
 
   currentDonationGoal: computed('_currentGoals', function() {

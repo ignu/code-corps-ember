@@ -6,6 +6,7 @@ export default Model.extend({
   owner: belongsTo('user'),
   projectCategories: hasMany(),
   projectSkills: hasMany(),
+  projectUsers: hasMany(),
   stripeConnectPlan: belongsTo(),
   taskLists: hasMany(),
   tasks: hasMany()

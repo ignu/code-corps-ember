@@ -25,6 +25,8 @@ export default Model.extend({
 
   organizationMemberships: hasMany('organization-membership', { async: true }),
 
+  projectUsers: hasMany('project-user', { async: true }),
+
   stripeConnectSubscriptions: hasMany('stripe-connect-subscription', { async: true }),
   stripePlatformCard: belongsTo('stripe-platform-card', { async: true }),
   stripePlatformCustomer: belongsTo('stripe-platform-customer', { async: true }),

@@ -254,6 +254,16 @@ export default function() {
   this.delete('/project-skills/:id');
 
   /**
+  * Project users
+  */
+
+  this.get('/project-users', { coalesce: true });
+  this.post('/project-users');
+  this.get('/project-users/:id');
+  this.patch('/project-users/:id');
+  this.delete('/project-users/:id');
+
+  /**
   * Projects
   */
 
