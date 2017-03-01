@@ -10,7 +10,6 @@ let page = PageObject.create(component);
 moduleForComponent('project-menu', 'Integration | Component | project menu', {
   integration: true,
   beforeEach() {
-    stubService(this, 'credentials');
     page.setContext(this);
   },
   afterEach() {
@@ -65,12 +64,16 @@ test('when authenticated, and user can manage project, and project has pending m
 
   stubService(this, 'session', { isAuthenticated: true });
   this.register('ability:project', Ability.extend({ canManage: true }));
-  let project = { hasPendingMembers: true, pendingMembersCount: 7 };
+  let project = {
+    projectUsers: [
+      { role: 'pending' }
+    ]
+  };
   this.set('project', project);
 
   page.render(hbs`{{project-menu project=project}}`);
 
-  assert.equal(page.links(2).badge.text, '7 pending', 'The correct number of pending members render');
+  assert.equal(page.links(2).badge.text, '1 pending', 'The correct number of pending members render');
 });
 
 test('when authenticated, and user can manage project, and project has no pending members', function(assert) {
@@ -78,7 +81,11 @@ test('when authenticated, and user can manage project, and project has no pendin
 
   stubService(this, 'session', { isAuthenticated: true });
   this.register('ability:project', Ability.extend({ canManage: true }));
-  let project = { hasPendingMembers: false, pendingMembersCount: 0 };
+  let project = {
+    projectUsers: [
+      { role: 'contributor' }
+    ]
+  };
   this.set('project', project);
 
   page.render(hbs`{{project-menu project=project}}`);

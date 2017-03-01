@@ -23,11 +23,7 @@ test('Requires user to be project owner to visit.', function(assert) {
 
   let user = server.create('user');
 
-  server.create('organizationMembership', {
-    member: user,
-    organization: project.organization,
-    role: 'contributor'
-  });
+  server.create('projectUser', { user, project, role: 'contributor' });
 
   let contributorURLParts = buildURLParts(project.organization.slug, project.slug);
 
@@ -47,11 +43,7 @@ test('Lists owner when owner is the only member.', function(assert) {
   let project = createProjectWithSluggedRoute();
   let user = project.createOwner();
 
-  server.create('organizationMembership', {
-    member: user,
-    organization: project.organization,
-    role: 'owner'
-  });
+  server.create('projectUser', { user, project, role: 'owner' });
 
   let contributorURLParts = buildURLParts(project.organization.slug, project.slug);
 
@@ -80,35 +72,10 @@ test('Lists multiple contributors if they exists.', function(assert) {
   let project = createProjectWithSluggedRoute();
   let user = project.createOwner();
 
-  server.create('organizationMembership', {
-    member: user,
-    organization: project.organization,
-    role: 'owner'
-  });
-
-  server.create('organizationMembership', {
-    member: server.create('user'),
-    organization: project.organization,
-    role: 'admin'
-  });
-
-  server.create('organizationMembership', {
-    member: server.create('user'),
-    organization: project.organization,
-    role: 'pending'
-  });
-
-  server.create('organizationMembership', {
-    member: server.create('user'),
-    organization: project.organization,
-    role: 'pending'
-  });
-
-  server.create('organizationMembership', {
-    member: server.create('user'),
-    organization: project.organization,
-    role: 'contributor'
-  });
+  server.create('projectUser', { user, project, role: 'owner' });
+  server.create('projectUser', { project, role: 'admin' });
+  server.create('projectUser', { project, role: 'contributor' });
+  server.createList('projectUser', 2, { project, role: 'pending' });
 
   let contributorURLParts = buildURLParts(project.organization.slug, project.slug);
 

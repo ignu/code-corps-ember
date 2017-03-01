@@ -16,10 +16,10 @@
 
 <aside class="project__header__side">
   {{#if session.isAuthenticated}}
-    {{#if credentials.userCanJoinOrganization}}
+    {{#unless currentProjectMembership}}
       <button class="default small" {{action 'joinProject'}}>Join project</button>
-    {{/if}}
-    {{#if credentials.userMembershipIsPending}}
+    {{/unless}}
+    {{#if (eq currentProjectMembership.role 'pending')}}
       <button class="clear small" disabled>Request sent</button>
     {{/if}}
   {{else}}

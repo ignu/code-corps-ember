@@ -2,6 +2,8 @@ import Ember from 'ember';
 
 const {
   Component,
+  computed,
+  get,
   inject: { service }
 } = Ember;
 
@@ -25,12 +27,6 @@ export default Component.extend({
   tagName: 'header',
 
   /**
-    @property store
-    @type Ember.service
-   */
-  store: service(),
-
-  /**
     @property session
     @type Ember.service
    */
@@ -48,6 +44,17 @@ export default Component.extend({
    */
   currentUser: service(),
 
+  // TODO: Maybe move this into credentials service and alias from there
+  // Similar code is defined in `abilities/task.js`
+  currentProjectMembership: computed('project.projectUsers', 'currentUser.user.id', function() {
+    let projectUsers = get(this, 'project.projectUsers');
+    let currentUserId = get(this, 'currentUser.user.id');
+
+    return projectUsers.find((item) => {
+      return get(item, 'user.id') === currentUserId;
+    });
+  }),
+
   actions: {
     /**
       Action that allows a user to join a project.
@@ -55,8 +62,8 @@ export default Component.extend({
       @method joinProject
      */
     joinProject() {
-      let organization = this.get('project.organization');
-      this.get('credentials').joinOrganization(organization);
+      let project = get(this, 'project');
+      get(this, 'credentials').joinProject(project);
     }
   }
 });

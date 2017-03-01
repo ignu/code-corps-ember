@@ -2,6 +2,7 @@ import Ember from 'ember';
 
 const {
   Component,
+  computed: { alias, gt, filterBy },
   inject: { service }
 } = Ember;
 
@@ -37,5 +38,9 @@ export default Component.extend({
     @property session
     @type Ember.Service
    */
-  session: service()
+  session: service(),
+
+  projectHasPendingMembers: gt('projectPendingMembersCount', 0),
+  projectPendingMembersCount: alias('projectPendingMemberships.length'),
+  projectPendingMemberships: filterBy('project.projectUsers', 'role', 'pending')
 });

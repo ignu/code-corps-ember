@@ -198,23 +198,21 @@ test('A task can be opened or closed by the author', function(assert) {
 test('A task can be opened or closed by the organization admin', function(assert) {
   assert.expect(2);
 
-  let user = server.schema.users.create({ username: 'test_user' });
+  let user = server.create('user', { username: 'test_user' });
   authenticateSession(this.application, { user_id: user.id });
 
-  let organization = createOrganizationWithSluggedRoute();
-  let project = server.create('project', { organization });
+  let project = createProjectWithSluggedRoute();
 
-  let task = server.schema.create('task', {
+  let task = project.createTask({
     type: 'issue',
     status: 'open',
-    number: 1,
-    project
+    number: 1
   });
 
-  server.schema.create('organization-membership', { organization, member:  user, role: 'admin' });
+  server.create('project-user', { project, user, role: 'admin' });
 
   taskPage.visit({
-    organization: organization.slug,
+    organization: project.organization.slug,
     project: project.slug,
     number: task.number
   });
@@ -238,13 +236,13 @@ test('A task can be opened or closed by the organization admin', function(assert
 test('A task cannot be opened or closed by someone else', function(assert) {
   assert.expect(1);
 
-  let user = server.schema.users.create({ username: 'test_user' });
+  let user = server.create('user', { username: 'test_user' });
   authenticateSession(this.application, { user_id: user.id });
 
   let organization = createOrganizationWithSluggedRoute();
   let project = server.create('project', { organization });
 
-  let task = server.schema.create('task', {
+  let task = server.create('task', {
     type: 'issue',
     status: 'open',
     number: 1,

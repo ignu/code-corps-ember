@@ -3,9 +3,10 @@ import Ember from 'ember';
 const {
   computed,
   computed: {
-    alias, empty, notEmpty
+    alias
   },
   get,
+  getProperties,
   inject: { service },
   RSVP,
   Service,
@@ -52,20 +53,6 @@ export default Service.extend({
 
   user: alias('currentUser.user'),
 
-  userCanJoinOrganization: empty('membership'),
-  userCanManageOrganization: alias('membership.isAtLeastAdmin'),
-  userIsMemberInOrganization: notEmpty('membership'),
-  userMembershipIsPending: alias('membership.isPending'),
-
-  joinOrganization() {
-    let member = get(this, 'user');
-    let membership = get(this, 'memberships').createRecord({
-      member,
-      role: 'pending'
-    });
-    return membership.save();
-  },
-
   setOrganization(organization) {
     set(this, 'organization', organization);
     return this._refresh();
@@ -81,5 +68,11 @@ export default Service.extend({
 
   _refresh() {
     return get(this, 'memberships').reload();
+  },
+
+  joinProject(project) {
+    let { store, user } = getProperties(this, 'store', 'user');
+    return store.createRecord('project-user', { user, project, role: 'pending' })
+                .save();
   }
 });
